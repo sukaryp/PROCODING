@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belal Hesham | ProCoding CEO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --p-color: #6366f1;
+      --s-color: #ec4899;
+      --neon-blue: #00f3ff;
+    }
+
+    body {
+      margin: 0;
+      background: #010103;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      transition: 0.5s;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    body.lang-ar {
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100%;
+      height: 100vh;
+    }
+
+    /* Custom Cursor */
+    #cursor {
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.1s;
+    }
+
+    #cursor-blur {
+      width: 50px;
+      height: 50px;
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      filter: blur(10px);
+      transition: 0.15s;
+    }
+
+    .earth-trigger {
+      cursor: pointer;
+      width: 70px;
+      height: 70px;
+      background: radial-gradient(circle, #4f46e5, #000);
+      border-radius: 50%;
+      box-shadow: 0 0 20px var(--p-color);
+      transition: 0.5s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .earth-trigger::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid var(--p-color);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .glass-card:hover {
+      border-color: var(--neon-blue);
+      transform: translateY(-15px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 243, 255, 0.15);
+    }
+
+    /* Marquee Styling */
+    .marquee { display: flex; overflow: hidden; user-select: none; gap: 4rem; mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent); }
+    .marquee-content { flex-shrink: 0; display: flex; justify-content: space-around; min-width: 100%; gap: 4rem; animation: scroll 30s linear infinite; }
+    @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+
+    .skill-box {
+      padding: 15px;
+      border-radius: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--p-color), var(--s-color));
+      width: 0;
+      transition: 2s cubic-bezier(0.1, 0, 0, 1);
+    }
+
+    .social-sidebar {
+      position: fixed;
+      left: 25px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .social-icon {
+      width: 55px;
+      height: 55px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.4s;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .social-icon:hover {
+      background: var(--p-color);
+      transform: scale(1.2) rotate(10deg);
+      color: white;
+      box-shadow: 0 0 25px var(--p-color);
+    }
+
+    .lang-ar .social-sidebar {
+      left: auto;
+      right: 25px;
+    }
+
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+
+<body class="selection:bg-indigo-500">
+
+  <div id="cursor"></div>
+  <div id="cursor-blur"></div>
+  <div id="canvas-container"></div>
+
+  <div class="social-sidebar">
+    <a href="https://wa.me/201144365046" target="_blank" class="social-icon"><i class="fab fa-whatsapp text-2xl text-green-400"></i></a>
+    <a href="mailto:plalheshamabs@gmail.com" class="social-icon"><i class="far fa-envelope text-2xl text-red-400"></i></a>
+    <a href="https://github.com" target="_blank" class="social-icon"><i class="fab fa-github text-2xl text-white"></i></a>
+    <a href="#" target="_blank" class="social-icon"><i class="fab fa-linkedin-in text-2xl text-blue-400"></i></a>
+  </div>
+
+  <nav class="fixed top-0 w-full p-6 flex justify-between items-center z-50 bg-black/40 backdrop-blur-xl border-b border-white/5">
+    <div class="text-xl md:text-3xl font-black tracking-tighter">PROCODING<span class="text-indigo-500">.CEO</span></div>
+    <div class="flex items-center gap-6">
+      <div class="flex flex-col items-center gap-1" onclick="toggleLang()" style="cursor: pointer;">
+        <div class="earth-trigger">
+          <i class="fas fa-globe-africa text-2xl text-blue-300"></i>
+        </div>
+        <span class="text-[10px] font-bold text-indigo-400" id="lang-btn">ARABIC</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="relative z-10 pt-32">
+    <section class="min-h-screen flex flex-col justify-center items-center text-center px-6">
+      <div class="bg-indigo-500/10 border border-indigo-500/20 px-6 py-2 rounded-full text-indigo-400 text-[10px] mb-8 uppercase tracking-[4px] floating">Belal Hesham Ecosystem</div>
+      <h1 class="text-6xl md:text-9xl font-black mb-6 tracking-tighter" id="hero-title">
+        BELAL <span class="text-indigo-500">HESHAM</span>
+      </h1>
+      <p class="text-gray-400 max-w-2xl text-lg md:text-2xl h-16 font-light" id="hero-desc">
+        Engineering the next generation of digital infrastructure.
+      </p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 w-full max-w-6xl">
+        <div class="glass-card p-8">
+          <i class="fas fa-cubes text-4xl mb-6 text-indigo-500"></i>
+          <h3 class="font-black text-xs tracking-widest uppercase mb-2">Systems Architecture</h3>
+          <div class="w-10 h-1 bg-indigo-500 mx-auto"></div>
+        </div>
+        <div class="glass-card p-8">
+          <i class="fas fa-code-branch text-4xl mb-6 text-pink-500"></i>
+          <h3 class="font-black text-xs tracking-widest uppercase mb-2">Advanced Coding</h3>
+          <div class="w-10 h-1 bg-pink-500 mx-auto"></div>
+        </div>
+        <div class="glass-card p-8">
+          <i class="fas fa-shield-virus text-4xl mb-6 text-green-500"></i>
+          <h3 class="font-black text-xs tracking-widest uppercase mb-2">Cyber Defense</h3>
+          <div class="w-10 h-1 bg-green-500 mx-auto"></div>
+        </div>
+        <div class="glass-card p-8">
+          <i class="fas fa-project-diagram text-4xl mb-6 text-blue-500"></i>
+          <h3 class="font-black text-xs tracking-widest uppercase mb-2">IT Operations</h3>
+          <div class="w-10 h-1 bg-blue-500 mx-auto"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 bg-white/5 border-y border-white/5">
+        <div class="text-center mb-10 text-[10px] tracking-[5px] text-gray-500 uppercase">Mastered Development Stack</div>
+        <div class="marquee">
+            <div class="marquee-content">
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fas fa-code"></i> VS CODE</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fab fa-android"></i> ANDROID STUDIO</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fas fa-database"></i> SQL SERVER</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fas fa-fire"></i> FIREBASE</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fab fa-git-alt"></i> GIT & GITHUB</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fab fa-docker"></i> DOCKER</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fab fa-python"></i> PYTHON</span>
+            </div>
+            <div class="marquee-content">
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fas fa-code"></i> VS CODE</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fab fa-android"></i> ANDROID STUDIO</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fas fa-database"></i> SQL SERVER</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fas fa-fire"></i> FIREBASE</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fab fa-git-alt"></i> GIT & GITHUB</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fab fa-docker"></i> DOCKER</span>
+                <span class="text-2xl font-bold flex items-center gap-4 opacity-40"><i class="fab fa-python"></i> PYTHON</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-6xl mx-auto py-20 px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+          <h3 class="text-5xl font-black text-indigo-500 mb-2 counter" data-target="50">0</h3>
+          <p class="text-[10px] tracking-[3px] text-gray-500 uppercase">Projects</p>
+        </div>
+        <div>
+          <h3 class="text-5xl font-black text-pink-500 mb-2 counter" data-target="120">0</h3>
+          <p class="text-[10px] tracking-[3px] text-gray-500 uppercase">Clients</p>
+        </div>
+        <div>
+          <h3 class="text-5xl font-black text-green-500 mb-2 counter" data-target="15">0</h3>
+          <p class="text-[10px] tracking-[3px] text-gray-500 uppercase">Stack Tools</p>
+        </div>
+        <div>
+          <h3 class="text-5xl font-black text-blue-500 mb-2 counter" data-target="6">0</h3>
+          <p class="text-[10px] tracking-[3px] text-gray-500 uppercase">Exp Years</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-4xl mx-auto py-10 px-6">
+        <div class="bg-black border border-white/10 rounded-lg overflow-hidden shadow-2xl">
+          <div class="bg-white/5 px-4 py-2 flex gap-2 border-b border-white/10">
+            <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+            <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+            <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+            <span class="text-[10px] text-gray-500 ml-4 font-mono">system_terminal — 80x24</span>
+          </div>
+          <div class="p-6 font-mono text-sm space-y-2">
+            <p class="text-green-500">>> Initializing Belal_Hesham_Core...</p>
+            <p class="text-blue-400">>> Environment: VS Code & Android Studio [Ready]</p>
+            <p class="text-yellow-500">>> Database: SQL Server Connected.</p>
+            <p class="text-pink-400">>> Connectivity Status: <span class="animate-pulse">Active_Secure_Connection</span></p>
+            <p class="text-gray-400">>> System_Version: 2026.4.0-Beta</p>
+            <p class="text-indigo-400">>> Ready for new projects...</p>
+            <div class="flex">
+              <span class="text-green-500">admin@procoding:~$</span>
+              <span class="ml-2 border-l-2 border-white animate-caret"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    <section id="skills" class="max-w-7xl mx-auto py-32 px-6">
+      <h2 class="text-5xl font-black mb-20 text-center tracking-tighter" id="skills-title">TECH SPECIFICATIONS</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="space-y-8">
+          <h4 class="text-indigo-500 font-black text-sm mb-6 flex items-center gap-2"><i class="fas fa-terminal"></i> DEVELOPMENT</h4>
+          <div class="skill-box">
+            <div class="flex justify-between items-center text-xs mb-1">
+              <span class="flex items-center gap-2"><i class="fab fa-google text-blue-400"></i> Flutter / Dart</span>
+              <span class="font-mono">98%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" data-done="98%"></div>
+            </div>
+          </div>
+          <div class="skill-box">
+            <div class="flex justify-between items-center text-xs mb-1">
+              <span class="flex items-center gap-2"><i class="fab fa-node-js text-green-500"></i> Node.js Backend</span>
+              <span class="font-mono">91%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" data-done="91%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-8">
+          <h4 class="text-pink-500 font-black text-sm mb-6 flex items-center gap-2"><i class="fas fa-network-wired"></i> INFRASTRUCTURE</h4>
+          <div class="skill-box">
+            <div class="flex justify-between items-center text-xs mb-1">
+              <span class="flex items-center gap-2"><i class="fas fa-microchip text-gray-400"></i> Cisco Networking</span>
+              <span class="font-mono">95%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" data-done="95%"></div>
+            </div>
+          </div>
+          <div class="skill-box">
+            <div class="flex justify-between items-center text-xs mb-1">
+              <span class="flex items-center gap-2"><i class="fab fa-linux text-white"></i> Linux Admin</span>
+              <span class="font-mono">90%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" data-done="90%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-8">
+          <h4 class="text-green-500 font-black text-sm mb-6 flex items-center gap-2"><i class="fas fa-user-secret"></i> SECURITY</h4>
+          <div class="skill-box">
+            <div class="flex justify-between items-center text-xs mb-1">
+              <span class="flex items-center gap-2"><i class="fas fa-biohazard text-green-400"></i> Ethical Hacking</span>
+              <span class="font-mono">82%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" data-done="82%"></div>
+            </div>
+          </div>
+          <div class="skill-box">
+            <div class="flex justify-between items-center text-xs mb-1">
+              <span class="flex items-center gap-2"><i class="fas fa-database text-blue-500"></i> SQL Databases</span>
+              <span class="font-mono">94%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" data-done="94%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="max-w-7xl mx-auto py-32 px-6">
+      <h2 class="text-4xl font-black mb-16 text-center tracking-tighter">FEATURED_PROJECTS</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="glass-card group overflow-hidden">
+          <div class="h-48 bg-indigo-900/20 flex items-center justify-center">
+            <i class="fas fa-mobile-alt text-6xl text-indigo-500 group-hover:scale-125 transition-transform duration-500"></i>
+          </div>
+          <div class="p-6 text-center">
+            <h4 class="font-bold mb-2">E-Commerce Solution</h4>
+            <p class="text-[10px] text-gray-400 mb-4">Advanced Flutter App for global trade.</p>
+          </div>
+        </div>
+        <div class="glass-card group overflow-hidden">
+          <div class="h-48 bg-pink-900/20 flex items-center justify-center">
+            <i class="fas fa-network-wired text-6xl text-pink-500 group-hover:scale-125 transition-transform duration-500"></i>
+          </div>
+          <div class="p-6 text-center">
+            <h4 class="font-bold mb-2">Infrastructure Monitor</h4>
+            <p class="text-[10px] text-gray-400 mb-4">Real-time network security dashboard.</p>
+          </div>
+        </div>
+        <div class="glass-card group overflow-hidden">
+          <div class="h-48 bg-green-900/20 flex items-center justify-center">
+            <i class="fas fa-shield-alt text-6xl text-green-500 group-hover:scale-125 transition-transform duration-500"></i>
+          </div>
+          <div class="p-6 text-center">
+            <h4 class="font-bold mb-2">Security Audit Tool</h4>
+            <p class="text-[10px] text-gray-400 mb-4">Automation tool for system vulnerabilities.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-10 text-center border-t border-white/5 bg-black/50">
+    <p class="text-[10px] text-gray-500 tracking-[5px]">© 2026 PROCODING BY BELAL HESHAM. PLALHESHAMABS@GMAIL.COM</p>
+  </footer>
+
+  <script>
+    gsap.registerPlugin(TextPlugin);
+
+    // --- Custom Cursor ---
+    const cursor = document.getElementById('cursor');
+    const cursorBlur = document.getElementById('cursor-blur');
+    window.addEventListener('mousemove', (e) => {
+      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+      gsap.to(cursorBlur, { x: e.clientX - 15, y: e.clientY - 15, duration: 0.1 });
+    });
+
+    // --- Translations ---
+    const data = {
+      en: {
+        title: "BELAL <span class='text-indigo-500'>HESHAM</span>",
+        desc: "Engineering the next generation of digital infrastructure.",
+        skills: "TECH SPECIFICATIONS",
+        langBtn: "ARABIC"
+      },
+      ar: {
+        title: "بلال <span class='text-indigo-500'>هشام</span>",
+        desc: "هندسة الجيل القادم من البنية التحتية الرقمية المتكاملة.",
+        skills: "المواصفات التقنية",
+        langBtn: "ENGLISH"
+      }
+    };
+
+    function toggleLang() {
+      const body = document.body;
+      const isEn = body.getAttribute('lang') === 'en';
+      const newLang = isEn ? 'ar' : 'en';
+      body.setAttribute('lang', newLang);
+      body.classList.toggle('lang-ar');
+      document.getElementById('hero-title').innerHTML = data[newLang].title;
+      document.getElementById('lang-btn').innerText = data[newLang].langBtn;
+      document.getElementById('skills-title').innerText = data[newLang].skills;
+      gsap.fromTo("#hero-desc", { text: "" }, { text: data[newLang].desc, duration: 2, ease: "none" });
+    }
+
+    // --- Three.js Engine ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    const starGeo = new THREE.BufferGeometry();
+    const starCount = 15000;
+    const posArray = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 3000; }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const starMat = new THREE.PointsMaterial({ size: 1.5, color: 0xffffff, transparent: true, opacity: 0.8 });
+    const starMesh = new THREE.Points(starGeo, starMat);
+    scene.add(starMesh);
+    camera.position.z = 1000;
+
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX - window.innerWidth / 2) * 0.1;
+      mouseY = (e.clientY - window.innerHeight / 2) * 0.1;
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      starMesh.rotation.y += 0.0008;
+      starMesh.position.x += (mouseX - starMesh.position.x) * 0.05;
+      starMesh.position.y += (-mouseY - starMesh.position.y) * 0.05;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // --- Counters Logic ---
+    const counters = document.querySelectorAll('.counter');
+    const runCounters = () => {
+      counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const update = () => {
+          const count = +counter.innerText;
+          const speed = target / 100;
+          if (count < target) {
+            counter.innerText = Math.ceil(count + speed);
+            setTimeout(update, 20);
+          } else { counter.innerText = target + "+"; }
+        }
+        update();
+      });
+    };
+
+    // --- Scroll Watcher ---
+    let triggered = false;
+    window.addEventListener('scroll', () => {
+      const scroll = window.scrollY;
+      camera.position.z = 1000 - (scroll * 0.6);
+
+      document.querySelectorAll('.progress-fill').forEach(bar => {
+        if (bar.getBoundingClientRect().top < window.innerHeight) bar.style.width = bar.getAttribute('data-done');
+      });
+
+      if (!triggered && document.querySelector('.counter').getBoundingClientRect().top < window.innerHeight) {
+        runCounters();
+        triggered = true;
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    gsap.to("#hero-desc", { text: data.en.desc, duration: 2, delay: 1 });
+  </script>
+</body>
+
+</html>
