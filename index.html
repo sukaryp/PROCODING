@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belal Hesham | ProCoding CEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cairo:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --p-color: #6366f1; --s-color: #ec4899; --neon-blue: #00f3ff; --neon-green: #39ff14; --dark-bg: #010103; }
+        * { cursor: none !important; scroll-behavior: smooth; }
+        body { margin: 0; background: var(--dark-bg); color: white; font-family: 'Orbitron', sans-serif; overflow-x: hidden; }
+        body.lang-ar { font-family: 'Cairo', sans-serif; direction: rtl; }
+        
+        #canvas-container { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100vh; }
+        
+        /* Specialized Cursor */
+        #cursor { width: 6px; height: 6px; background: #fff; border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; }
+        #cursor-blur { width: 45px; height: 45px; border: 1px solid var(--neon-blue); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* Glassmorphism 4.0 */
+        .cyber-card { 
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%); 
+            backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px;
+            transition: 0.5s; position: relative; overflow: hidden;
+        }
+        .cyber-card:hover { border-color: var(--neon-blue); box-shadow: 0 0 30px rgba(0, 243, 255, 0.15); transform: translateY(-10px); }
+        .cyber-card::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1), transparent); transition: 0.5s; }
+        .cyber-card:hover::after { left: 100%; }
+
+        /* Tech Badges */
+        .tech-badge { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 5px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; color: var(--neon-blue); }
+
+        /* Cyber Security Scanner Animation */
+        @keyframes scan { 0% { top: 0% } 100% { top: 100% } }
+        .scanner-line { position: absolute; width: 100%; height: 4px; background: var(--neon-green); box-shadow: 0 0 15px var(--neon-green); animation: scan 3s infinite linear; z-index: 2; opacity: 0.5; }
+
+        .system-ticker { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); font-family: 'JetBrains Mono', monospace; font-size: 10px; overflow: hidden; white-space: nowrap; padding: 5px 0; }
+        .ticker-wrap { display: inline-block; animation: ticker 30s linear infinite; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* Dock System */
+        .dock { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); padding: 10px 25px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); z-index: 1000; display: flex; gap: 20px; }
+        .dock i { font-size: 1.5rem; transition: 0.3s; cursor: pointer; }
+        .dock i:hover { transform: scale(1.4) translateY(-10px); color: var(--neon-blue); }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div id="cursor-blur"></div>
+    <div id="canvas-container"></div>
+
+    <div class="system-ticker fixed top-0 w-full z-[60]">
+        <div class="ticker-wrap text-indigo-400">
+            [SYS_STATUS: OPTIMAL] • [SERVER_LATENCY: 14MS] • [ENCRYPTION: AES-256] • [LOCATION: CAIRO_EGYPT] • [AVAILABLE_FOR_HIRE: TRUE] • [DATABASE: CONNECTED] • [CORE_TEMP: 32°C]
+        </div>
+    </div>
+
+    <nav class="fixed top-6 w-full px-8 flex justify-between items-center z-50">
+        <div class="flex items-center gap-4 bg-black/40 p-2 rounded-2xl backdrop-blur-md border border-white/5">
+            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-pink-500 rounded-lg flex items-center justify-center font-black">B</div>
+            <div>
+                <h2 class="text-xs font-black tracking-tighter">PROCODING<span class="text-indigo-500">.CEO</span></h2>
+                <div class="flex gap-1">
+                    <div class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div>
+                    <p class="text-[8px] text-gray-400 font-mono uppercase">System Active</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="toggleLang()" class="cyber-card px-6 py-2 text-[10px] font-bold" id="lang-btn">ARABIC</button>
+        </div>
+    </nav>
+
+    <main class="relative z-10">
+        <section class="min-h-screen flex flex-col justify-center items-center px-6">
+            <div class="text-center">
+                <p class="text-indigo-400 font-mono text-[10px] tracking-[6px] mb-4 uppercase">Architecting Future Systems</p>
+                <h1 class="text-6xl md:text-[120px] font-black leading-none tracking-tighter mb-8">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">BELAL</span><br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">HESHAM</span>
+                </h1>
+                <p id="hero-desc" class="text-gray-400 font-mono text-sm md:text-lg max-w-2xl mx-auto h-12"></p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 w-full max-w-4xl">
+                <div class="cyber-card p-6 text-center">
+                    <h3 class="text-2xl font-black text-indigo-500">6+</h3>
+                    <p class="text-[9px] text-gray-500 tracking-widest uppercase mt-2">Years of Code</p>
+                </div>
+                <div class="cyber-card p-6 text-center">
+                    <h3 class="text-2xl font-black text-pink-500">45+</h3>
+                    <p class="text-[9px] text-gray-500 tracking-widest uppercase mt-2">Enterprise Apps</p>
+                </div>
+                <div class="cyber-card p-6 text-center">
+                    <h3 class="text-2xl font-black text-green-500">120+</h3>
+                    <p class="text-[9px] text-gray-500 tracking-widest uppercase mt-2">Security Audits</p>
+                </div>
+                <div class="cyber-card p-6 text-center">
+                    <h3 class="text-2xl font-black text-blue-500">0%</h3>
+                    <p class="text-[9px] text-gray-500 tracking-widest uppercase mt-2">System Failures</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-24 px-6 max-w-7xl mx-auto">
+            <div class="flex items-center gap-4 mb-16">
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent to-indigo-500"></div>
+                <h2 class="text-2xl font-black tracking-widest">TECH_STACK</h2>
+                <div class="h-px flex-1 bg-gradient-to-l from-transparent to-indigo-500"></div>
+            </div>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-6">
+                <div class="cyber-card p-8 flex flex-col items-center group">
+                    <i class="fab fa-js text-4xl text-yellow-400 group-hover:scale-125 transition"></i>
+                    <span class="text-[10px] mt-4 font-bold">JAVASCRIPT</span>
+                </div>
+                <div class="cyber-card p-8 flex flex-col items-center group">
+                    <i class="fab fa-python text-4xl text-blue-400 group-hover:scale-125 transition"></i>
+                    <span class="text-[10px] mt-4 font-bold">PYTHON</span>
+                </div>
+                <div class="cyber-card p-8 flex flex-col items-center group">
+                    <i class="fas fa-database text-4xl text-green-400 group-hover:scale-125 transition"></i>
+                    <span class="text-[10px] mt-4 font-bold">SQL/NOSQL</span>
+                </div>
+                <div class="cyber-card p-8 flex flex-col items-center group">
+                    <i class="fab fa-flutter text-4xl text-cyan-400 group-hover:scale-125 transition"></i>
+                    <span class="text-[10px] mt-4 font-bold">FLUTTER</span>
+                </div>
+                <div class="cyber-card p-8 flex flex-col items-center group">
+                    <i class="fab fa-docker text-4xl text-blue-500 group-hover:scale-125 transition"></i>
+                    <span class="text-[10px] mt-4 font-bold">DOCKER</span>
+                </div>
+                <div class="cyber-card p-8 flex flex-col items-center group">
+                    <i class="fas fa-shield-virus text-4xl text-red-500 group-hover:scale-125 transition"></i>
+                    <span class="text-[10px] mt-4 font-bold">PENTESTING</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-32 px-6">
+            <div class="max-w-6xl mx-auto cyber-card p-12 relative overflow-hidden">
+                <div class="scanner-line"></div>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <div class="tech-badge mb-6 inline-block">SECURITY PROTOCOL v3.0</div>
+                        <h2 class="text-4xl font-black mb-6">CYBER SECURITY<br>& PENETRATION</h2>
+                        <p class="text-gray-400 font-mono text-sm leading-relaxed mb-8">
+                            Advanced defense mechanisms for modern infrastructure. Specialized in finding vulnerabilities before the hackers do. 
+                        </p>
+                        <ul class="space-y-4 font-mono text-xs text-green-400">
+                            <li><i class="fas fa-check-circle mr-2"></i> SQL INJECTION PREVENTION</li>
+                            <li><i class="fas fa-check-circle mr-2"></i> DDOS MITIGATION STRATEGIES</li>
+                            <li><i class="fas fa-check-circle mr-2"></i> SECURE API ARCHITECTURE</li>
+                        </ul>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-black/50 border border-white/5 p-6 rounded-xl text-center">
+                            <i class="fas fa-fingerprint text-3xl text-indigo-500 mb-4"></i>
+                            <h4 class="text-xs font-bold">IDENTITY AUTH</h4>
+                        </div>
+                        <div class="bg-black/50 border border-white/5 p-6 rounded-xl text-center">
+                            <i class="fas fa-key text-3xl text-pink-500 mb-4"></i>
+                            <h4 class="text-xs font-bold">ENCRYPTION</h4>
+                        </div>
+                        <div class="bg-black/50 border border-white/5 p-6 rounded-xl text-center">
+                            <i class="fas fa-user-shield text-3xl text-green-500 mb-4"></i>
+                            <h4 class="text-xs font-bold">ZERO TRUST</h4>
+                        </div>
+                        <div class="bg-black/50 border border-white/5 p-6 rounded-xl text-center">
+                            <i class="fas fa-bug text-3xl text-red-500 mb-4"></i>
+                            <h4 class="text-xs font-bold">BUG BOUNTY</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="max-w-4xl mx-auto py-20 px-6">
+            <div class="bg-black rounded-xl border border-indigo-500/30 overflow-hidden shadow-[0_0_50px_rgba(99,102,241,0.1)]">
+                <div class="bg-indigo-500/10 px-4 py-2 flex justify-between items-center border-b border-white/5">
+                    <span class="text-[10px] font-mono text-indigo-400">PROCODING_EXECUTION_TERMINAL</span>
+                    <div class="flex gap-1">
+                        <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
+                        <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
+                    </div>
+                </div>
+                <div class="p-8 font-mono text-xs space-y-2 text-gray-400" id="console">
+                    <p class="text-indigo-500">>>> INITIALIZING BELAL_OS...</p>
+                    <p>>>> LOADING CORE LIBRARIES [DONE]</p>
+                    <p>>>> SYNCING WITH SATELLITE [DONE]</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="dock">
+        <i class="fab fa-whatsapp text-green-500" onclick="window.location.href='https://wa.me/201144365046'"></i>
+        <i class="fab fa-github text-white"></i>
+        <i class="fab fa-linkedin text-blue-500"></i>
+        <i class="fas fa-envelope text-red-500" onclick="window.location.href='mailto:plalheshamabs@gmail.com'"></i>
+    </div>
+
+    <footer class="py-20 text-center border-t border-white/5 mt-20">
+        <p class="text-[10px] text-gray-600 font-bold tracking-[10px] uppercase">Engineering The Impossible</p>
+        <p class="text-gray-400 mt-4 text-xs font-mono">Belal Hesham © 2026. Distributed by ProCoding Systems.</p>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(TextPlugin, ScrollTrigger);
+
+        // Advanced Cursor
+        const cursor = document.getElementById('cursor');
+        const blur = document.getElementById('cursor-blur');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0 });
+            gsap.to(blur, { x: e.clientX - 22, y: e.clientY - 22, duration: 0.15 });
+        });
+
+        // Language Logic
+        const translations = {
+            en: { desc: "Software Engineer & CEO. Specialized in High-Availability Backend Architecture and Cyber Security Systems.", lang: "ARABIC" },
+            ar: { desc: "مهندس برمجيات ومدير تنفيذي. متخصص في بنية الأنظمة عالية الأداء وأنظمة السيبر سيكورتي.", lang: "ENGLISH" }
+        };
+
+        function toggleLang() {
+            const isEn = document.body.getAttribute('lang') === 'en';
+            const target = isEn ? 'ar' : 'en';
+            document.body.setAttribute('lang', target);
+            document.body.classList.toggle('lang-ar');
+            document.getElementById('lang-btn').innerText = translations[target].lang;
+            gsap.to("#hero-desc", { text: translations[target].desc, duration: 1.5, ease: "none" });
+        }
+
+        // Initialize Hero
+        gsap.to("#hero-desc", { text: translations.en.desc, duration: 2, delay: 0.5 });
+
+        // Three.js Scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const starGeo = new THREE.BufferGeometry();
+        const stars = new Float32Array(15000 * 3);
+        for(let i=0; i<45000; i++) stars[i] = (Math.random()-0.5) * 1200;
+        starGeo.setAttribute('position', new THREE.BufferAttribute(stars, 3));
+        const starMesh = new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0x6366f1, size: 0.4}));
+        scene.add(starMesh);
+        camera.position.z = 500;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            starMesh.rotation.y += 0.0002;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Terminal Effects
+        const consoleEl = document.getElementById('console');
+        const logs = [
+            "> Security sweep started...",
+            "> No vulnerabilities found.",
+            "> Optimized DB queries by 40%.",
+            "> Deploying Smart_Cashier_v2...",
+            "> Connection: SECURE."
+        ];
+        let logIndex = 0;
+        setInterval(() => {
+            if(logIndex < logs.length) {
+                const p = document.createElement('p');
+                p.innerText = logs[logIndex];
+                p.className = "text-green-500/70";
+                consoleEl.appendChild(p);
+                logIndex++;
+            }
+        }, 3000);
+
+        // Scroll Reveal
+        gsap.utils.toArray('.cyber-card').forEach(card => {
+            gsap.from(card, {
+                scrollTrigger: { trigger: card, start: "top 90%" },
+                opacity: 0, y: 30, duration: 1
+            });
+        });
+    </script>
+</body>
+</html>
