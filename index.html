@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belal Hesham | Innovation Lead</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Cairo:wght@400;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --accent: #0047ff;
+      --bg: #f8f9ff;
+      --text: #050505;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+    }
+
+    body.lang-ar {
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+    }
+
+    /* Noise Texture Effect */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://grainy-gradients.vercel.app/noise.svg');
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .blob {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 71, 255, 0.15) 0%, transparent 70%);
+      z-index: -1;
+      filter: blur(80px);
+      border-radius: 50%;
+    }
+
+    /* Floating Icons Background */
+    .tech-icon-bg {
+      position: fixed;
+      font-size: 2.5rem;
+      color: var(--accent);
+      opacity: 0.08;
+      z-index: -1;
+      pointer-events: none;
+      filter: blur(1px);
+    }
+
+    @keyframes floatAnim {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+
+      50% {
+        transform: translateY(-20px) rotate(10deg);
+      }
+    }
+
+    .bento-item {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      border-radius: 40px;
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .bento-item:hover {
+      transform: translateY(-12px) scale(1.01);
+      background: #fff;
+      box-shadow: 0 50px 100px rgba(0, 71, 255, 0.08);
+      border-color: var(--accent);
+    }
+
+    .custom-cursor {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 10000;
+    }
+
+    .cursor-follower {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease-out, background 0.3s;
+    }
+
+    .hero-text {
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      line-height: 0.85;
+      font-weight: 700;
+      letter-spacing: -0.06em;
+    }
+
+    .magnetic-wrap {
+      display: inline-block;
+      transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* Marquee Effect */
+    .marquee {
+      display: flex;
+      overflow: hidden;
+      user-select: none;
+      gap: 2rem;
+      border-y: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 20px 0;
+    }
+
+    .marquee-content {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-around;
+      min-width: 100%;
+      gap: 2rem;
+      animation: scroll 20s linear infinite;
+    }
+
+    @keyframes scroll {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-100%);
+      }
+    }
+
+    .portrait-container {
+      width: 100%;
+      max-width: 500px;
+      height: 600px;
+      border-radius: 200px 200px 40px 40px;
+      overflow: hidden;
+      position: relative;
+      background: #e0e7ff;
+    }
+
+    .portrait-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%);
+      transition: filter 0.5s ease;
+    }
+
+    .portrait-container:hover .portrait-img {
+      filter: grayscale(0%);
+    }
+  </style>
+</head>
+
+<body class="selection:bg-blue-600 selection:text-white" lang="en">
+
+  <div class="custom-cursor" id="cursor"></div>
+  <div class="cursor-follower" id="follower"></div>
+  <div class="blob" id="blob"></div>
+
+  <i class="fab fa-flutter tech-icon-bg" style="top: 15%; left: 5%; animation: floatAnim 6s infinite ease-in-out;"></i>
+  <i class="fab fa-python tech-icon-bg" style="top: 40%; left: 12%; animation: floatAnim 8s infinite ease-in-out 1s;"></i>
+  <i class="fab fa-react tech-icon-bg" style="top: 70%; left: 8%; animation: floatAnim 7s infinite ease-in-out 0.5s;"></i>
+  <i class="fab fa-js tech-icon-bg" style="top: 20%; right: 10%; animation: floatAnim 9s infinite ease-in-out 2s;"></i>
+  <i class="fab fa-aws tech-icon-bg" style="top: 55%; right: 15%; animation: floatAnim 10s infinite ease-in-out 1.5s;"></i>
+  <i class="fab fa-docker tech-icon-bg" style="top: 85%; right: 5%; animation: floatAnim 12s infinite ease-in-out;"></i>
+  <i class="fas fa-database tech-icon-bg" style="top: 10%; left: 50%; animation: floatAnim 11s infinite ease-in-out 3s;"></i>
+
+  <nav class="fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-center bg-white/40 backdrop-blur-2xl border-b border-black/[0.03]">
+    <div class="text-2xl font-black tracking-tighter uppercase italic">BELAL<span class="text-blue-600">.</span></div>
+    <div class="flex items-center gap-8">
+      <div class="hidden md:flex gap-8 text-[10px] font-bold tracking-[3px] text-gray-400">
+        <a href="#work" class="hover:text-blue-600 transition-colors">PROJECTS</a>
+        <a href="#stack" class="hover:text-blue-600 transition-colors">STACK</a>
+      </div>
+
+      <div onclick="toggleLang()" id="lang-btn-container" class="group cursor-pointer flex items-center gap-3 border border-black px-5 py-2 rounded-full hover:bg-black hover:text-white transition-all duration-300">
+        <i class="fas fa-globe-africa text-blue-600 group-hover:text-white transition-transform duration-500" id="lang-icon"></i>
+        <span class="font-bold text-[10px] tracking-widest" id="lang-btn">ARABIC</span>
+      </div>
+    </div>
+  </nav>
+
+  <main class="relative pt-44 px-6">
+    <section class="max-w-7xl mx-auto mb-40 flex flex-col lg:flex-row items-center gap-16">
+      <div class="flex flex-col items-start flex-1">
+        <div class="overflow-hidden mb-4">
+          <span class="inline-block px-4 py-1.5 bg-blue-600 text-white rounded-full text-[10px] font-bold tracking-[4px] hero-reveal">PROCODING CEO</span>
+        </div>
+        <h1 class="hero-text mb-12 text-left" id="hero-title">
+          DIGITAL <br> <span class="text-blue-600">ARCHITECT.</span>
+        </h1>
+
+        <p class="text-2xl md:text-3xl text-gray-400 max-w-xl font-medium leading-tight mb-10" id="hero-desc">
+          Designing high-performance systems and immersive mobile experiences.
+        </p>
+
+        <div class="magnetic-wrap">
+          <a href="https://wa.me/201144365046" class="btn-cta group flex items-center gap-4 text-xs font-bold tracking-widest">
+            <span class="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center group-hover:bg-blue-600 transition-all duration-500">
+              <i class="fas fa-arrow-right -rotate-45 group-hover:rotate-0 transition-transform"></i>
+            </span>
+            <span id="cta-text">START A PROJECT</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="flex-1 relative portrait-reveal flex justify-center lg:justify-end">
+        <div class="portrait-container shadow-2xl border-4 border-white/90 relative" style="width: 100%; max-width: 450px; height: 580px; border-radius: 200px 200px 50px 50px; background: #f0f4ff; overflow: hidden;">
+
+          <img src="https://i.ibb.co/HfTK2qBf/imgi-88-630983765-919265584121667-5093010747434090048-n.jpg" alt="Belal Hesham" style="width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; transform: scale(1.1);" class="portrait-img">
+
+        </div>
+
+        <div class="absolute -bottom-10 -left-10 bento-item p-6 shadow-2xl hidden md:block border border-blue-50 z-20">
+          <p class="text-[10px] font-bold text-blue-600 tracking-widest mb-2" id="location-tag">BASED IN</p>
+          <p class="font-bold uppercase italic text-xl" id="location-city">Cairo, Egypt</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee mb-40">
+      <div class="marquee-content">
+        <span class="text-4xl font-black opacity-20 italic">FLUTTER</span>
+        <span class="text-4xl font-black opacity-20 italic">PYTHON</span>
+        <span class="text-4xl font-black opacity-20 italic">CYBER SECURITY</span>
+        <span class="text-4xl font-black opacity-20 italic">NEXT.JS</span>
+        <span class="text-4xl font-black opacity-20 italic">UI/UX DESIGN</span>
+        <span class="text-4xl font-black opacity-20 italic">DEVOPS</span>
+      </div>
+      <div class="marquee-content" aria-hidden="true">
+        <span class="text-4xl font-black opacity-20 italic">FLUTTER</span>
+        <span class="text-4xl font-black opacity-20 italic">PYTHON</span>
+        <span class="text-4xl font-black opacity-20 italic">CYBER SECURITY</span>
+        <span class="text-4xl font-black opacity-20 italic">NEXT.JS</span>
+        <span class="text-4xl font-black opacity-20 italic">UI/UX DESIGN</span>
+        <span class="text-4xl font-black opacity-20 italic">DEVOPS</span>
+      </div>
+    </div>
+
+    <section class="max-w-7xl mx-auto py-20 grid grid-cols-2 md:grid-cols-4 gap-8 mb-40 border-y border-black/5">
+      <div class="text-center">
+        <div class="text-5xl md:text-7xl font-bold mb-2 counter" data-target="8">0</div>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest" id="stat-1">Years Experience</p>
+      </div>
+      <div class="text-center">
+        <div class="text-5xl md:text-7xl font-bold mb-2 counter" data-target="150">0</div>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest" id="stat-2">Projects Done</p>
+      </div>
+      <div class="text-center">
+        <div class="text-5xl md:text-7xl font-bold mb-2 counter" data-target="40">0</div>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest" id="stat-3">Global Clients</p>
+      </div>
+      <div class="text-center">
+        <div class="text-5xl md:text-7xl font-bold mb-2 counter" data-target="12">0</div>
+        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest" id="stat-4">Awards Won</p>
+      </div>
+    </section>
+
+    <section id="stack" class="max-w-7xl mx-auto py-20 grid grid-cols-1 md:grid-cols-12 gap-6 mb-40">
+      <div class="bento-item md:col-span-8 p-12 relative overflow-hidden group">
+        <div class="relative z-10">
+          <h3 class="text-4xl font-bold mb-6" id="card-1-title">The Flutter <br> Specialist</h3>
+          <p class="text-gray-500 text-xl max-w-md" id="card-1-desc">I transform complex business logic into fluid, 60fps mobile applications that users love.</p>
+        </div>
+        <i class="fab fa-app-store-ios absolute -right-10 -bottom-10 text-[15rem] text-black/[0.02] group-hover:text-blue-600/10 transition-colors"></i>
+      </div>
+
+      <div class="bento-item md:col-span-4 p-12 bg-blue-600 !text-white">
+        <h3 class="text-2xl font-bold mb-4" id="card-2-title">Cyber Core</h3>
+        <p class="opacity-80" id="card-2-desc">Pentesting, secure API design, and data encryption are built into my DNA.</p>
+      </div>
+
+      <div class="bento-item md:col-span-4 p-12">
+        <h3 class="text-2xl font-bold mb-4" id="card-3-title">Strategy</h3>
+        <p class="text-gray-500" id="card-3-desc">Scaleable cloud infrastructure & DevOps automation for modern startups.</p>
+      </div>
+
+      <div class="bento-item md:col-span-8 p-12 flex flex-wrap gap-4 items-center">
+        <h3 class="text-2xl font-bold w-full mb-4" id="card-4-title">Modern Stack</h3>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-blue-50 transition-colors">
+          <i class="fab fa-flutter text-[#02569B]"></i> FLUTTER
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-yellow-50 transition-colors">
+          <i class="fab fa-python text-[#3776AB]"></i> PYTHON
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-blue-50 transition-colors">
+          <i class="fab fa-golang text-[#00ADD8]"></i> GOLANG
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-blue-50 transition-colors">
+          <i class="fab fa-docker text-[#2496ED]"></i> DOCKER
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-blue-50 transition-colors">
+          <i class="fas fa-dharmachakra text-[#326CE5]"></i> KUBERNETES
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-orange-50 transition-colors">
+          <i class="fab fa-aws text-[#FF9900]"></i> AWS
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-yellow-50 transition-colors">
+          <i class="fas fa-fire text-[#FFCA28]"></i> FIREBASE
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-blue-50 transition-colors">
+          <i class="fas fa-database text-[#336791]"></i> POSTGRESQL
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-red-50 transition-colors">
+          <i class="fas fa-bolt text-[#DC382D]"></i> REDIS
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-orange-50 transition-colors">
+          <i class="fab fa-git-alt text-[#F05032]"></i> GIT
+        </span>
+
+        <span class="skill-tag border border-black/10 px-5 py-2.5 rounded-full font-bold text-xs flex items-center gap-2 hover:bg-gray-100 transition-colors">
+          <i class="fab fa-linux text-[#333]"></i> LINUX
+        </span>
+      </div>
+    </section>
+
+    <footer class="max-w-7xl mx-auto py-20 border-t border-black/5 flex flex-col md:flex-row justify-between items-start gap-12">
+      <div>
+        <div class="text-5xl font-black mb-6 italic">BELAL<span class="text-blue-600">.</span></div>
+        <p class="text-gray-400 max-w-xs uppercase text-[10px] tracking-widest font-bold" id="footer-tag">Building from Cairo to the World.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-20">
+        <div class="flex flex-col gap-4 text-xs font-bold tracking-widest">
+          <p class="text-gray-300">SOCIAL</p>
+          <a href="#" class="hover:text-blue-600 transition-colors">GITHUB</a>
+          <a href="#" class="hover:text-blue-600 transition-colors">LINKEDIN</a>
+          <a href="#" class="hover:text-blue-600 transition-colors">INSTAGRAM</a>
+        </div>
+        <div class="flex flex-col gap-4 text-xs font-bold tracking-widest">
+          <p class="text-gray-300">CONTACT</p>
+          <a href="mailto:plalheshamabs@gmail.com">EMAIL</a>
+          <a href="https://wa.me/201144365046">WHATSAPP</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Cursor Logic
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('follower');
+
+    window.addEventListener('mousemove', (e) => {
+      gsap.to(cursor, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0
+      });
+      gsap.to(follower, {
+        x: e.clientX - 20,
+        y: e.clientY - 20,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+      gsap.to('#blob', {
+        x: e.clientX - 300,
+        y: e.clientY - 300,
+        duration: 2,
+        ease: "power1.out"
+      });
+    });
+
+    // Magnetic Effect
+    const magnetic = document.querySelector('.magnetic-wrap');
+    magnetic.addEventListener('mousemove', (e) => {
+      const bound = magnetic.getBoundingClientRect();
+      const x = e.clientX - bound.left - bound.width / 2;
+      const y = e.clientY - bound.top - bound.height / 2;
+      gsap.to(magnetic, {
+        x: x * 0.3,
+        y: y * 0.3,
+        duration: 0.3
+      });
+    });
+    magnetic.addEventListener('mouseleave', () => {
+      gsap.to(magnetic, {
+        x: 0,
+        y: 0,
+        duration: 0.5,
+        ease: "elastic.out(1, 0.3)"
+      });
+    });
+
+    // Counters Logic
+    const startCounters = () => {
+      document.querySelectorAll('.counter').forEach(c => {
+        const target = +c.getAttribute('data-target');
+        const update = () => {
+          const count = +c.innerText.replace('+', '');
+          const inc = target / 100;
+          if (count < target) {
+            c.innerText = Math.ceil(count + inc);
+            setTimeout(update, 20);
+          } else c.innerText = target + "+";
+        };
+        update();
+      });
+    };
+
+    ScrollTrigger.create({
+      trigger: ".counter",
+      start: "top 80%",
+      onEnter: startCounters
+    });
+
+    // Translation Data
+    const data = {
+      en: {
+        title: "DIGITAL <br> <span class='text-blue-600'>ARCHITECT.</span>",
+        desc: "Designing high-performance systems and immersive mobile experiences.",
+        langBtn: "ARABIC",
+        icon: "fa-globe-africa",
+        cta: "START A PROJECT",
+        locTag: "BASED IN",
+        locCity: "Cairo, Egypt"
+      },
+      ar: {
+        title: "مهندس <br> <span class='text-blue-600'>نظم رقمية.</span>",
+        desc: "تصميم أنظمة عالية الأداء وتجارب تطبيقات موبايل غامرة.",
+        langBtn: "ENGLISH",
+        icon: "fa-globe-americas",
+        cta: "ابدأ مشروعك",
+        locTag: "مقرنا في",
+        locCity: "القاهرة، مصر"
+      }
+    };
+
+    function toggleLang() {
+      const body = document.body;
+      const isEn = body.getAttribute('lang') === 'en';
+      const newLang = isEn ? 'ar' : 'en';
+
+      body.setAttribute('lang', newLang);
+      body.classList.toggle('lang-ar');
+
+      document.getElementById('hero-title').innerHTML = data[newLang].title;
+      document.getElementById('hero-desc').innerText = data[newLang].desc;
+      document.getElementById('lang-btn').innerText = data[newLang].langBtn;
+      document.getElementById('cta-text').innerText = data[newLang].cta;
+      document.getElementById('location-tag').innerText = data[newLang].locTag;
+      document.getElementById('location-city').innerText = data[newLang].locCity;
+
+      const icon = document.getElementById('lang-icon');
+      icon.className = `fas ${data[newLang].icon} text-blue-600 group-hover:text-white transition-transform duration-500`;
+
+      gsap.from(icon, {
+        rotate: 360,
+        duration: 0.6,
+        ease: "back.out(1.7)"
+      });
+      gsap.from("#hero-title, #hero-desc", {
+        y: 30,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 1
+      });
+    }
+
+    // Entrance Animations
+    window.onload = () => {
+      gsap.from(".hero-reveal", {
+        width: 0,
+        opacity: 0,
+        duration: 1,
+        ease: "power4.inOut"
+      });
+      gsap.from(".hero-text", {
+        y: 100,
+        opacity: 0,
+        duration: 1.2,
+        delay: 0.3,
+        ease: "power4.out"
+      });
+      gsap.from(".portrait-reveal", {
+        scale: 0.8,
+        opacity: 0,
+        duration: 1.5,
+        delay: 0.5,
+        ease: "power4.out"
+      });
+
+      gsap.to(".portrait-img", {
+        scrollTrigger: {
+          trigger: ".portrait-container",
+          start: "top bottom",
+          scrub: true
+        },
+        y: -50
+      });
+
+      // Random stagger for background tech icons
+      gsap.from(".tech-icon-bg", {
+        opacity: 0,
+        scale: 0,
+        duration: 2,
+        stagger: 0.2,
+        ease: "expo.out"
+      });
+    };
+  </script>
+</body>
+
+</html>
